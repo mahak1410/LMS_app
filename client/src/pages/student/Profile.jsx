@@ -17,6 +17,7 @@ import Course from "./Course";
 import {
   useLoadUserQuery,
   useUpdateUserMutation,
+  useBecomeInstructorMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
 
@@ -35,6 +36,9 @@ const Profile = () => {
       isSuccess,
     },
   ] = useUpdateUserMutation();
+
+  const [becomeInstructor, { isLoading: isBecoming }] =
+    useBecomeInstructorMutation();
 
   console.log(data);
 
@@ -69,7 +73,6 @@ const Profile = () => {
   const user = data && data.user;
 
   console.log(user);
-  
 
   return (
     <div className="max-w-4xl mx-auto px-4 my-10">
@@ -109,9 +112,40 @@ const Profile = () => {
               </span>
             </h1>
           </div>
+
+          {user?.role === "student" && (
+            <Button
+              size="sm"
+              className="mt-2"
+              disabled={isBecoming}
+              onClick={async () => {
+                try {
+                  const res = await becomeInstructor().unwrap();
+                  toast.success(
+                    res?.message || "You are now an instructor."
+                  );
+                  refetch();
+                } catch (err) {
+                  console.log(err);
+                  toast.error(
+                    err?.data?.message || "Failed to become instructor"
+                  );
+                }
+              }}
+            >
+              {isBecoming ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
+                </>
+              ) : (
+                "Become Instructor"
+              )}
+            </Button>
+          )}
+
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="sm" className="mt-2">
+              <Button size="sm" className="mt-2 ml-3">
                 Edit Profile
               </Button>
             </DialogTrigger>

@@ -17,6 +17,7 @@ export const authApi = createApi({
                 body:inputData
             })
         }),
+
         loginUser: builder.mutation({
             query: (inputData) => ({
                 url:"login",
@@ -32,6 +33,7 @@ export const authApi = createApi({
                 }
             }
         }),
+
         logoutUser: builder.mutation({
             query: () => ({
                 url:"logout",
@@ -45,6 +47,7 @@ export const authApi = createApi({
                 }
             }
         }),
+
         loadUser: builder.query({
             query: () => ({
                 url:"profile",
@@ -59,6 +62,7 @@ export const authApi = createApi({
                 }
             }
         }),
+
         updateUser: builder.mutation({
             query: (formData) => ({
                 url:"profile/update",
@@ -66,13 +70,31 @@ export const authApi = createApi({
                 body:formData,
                 credentials:"include"
             })
+        }),
+
+        // ⭐ ADDED: become instructor
+        becomeInstructor: builder.mutation({
+            query: () => ({
+                url: "become-instructor",
+                method: "PUT",
+            }),
+            async onQueryStarted(_, { queryFulfilled, dispatch }) {
+                try {
+                    const result = await queryFulfilled;
+                    dispatch(userLoggedIn({ user: result.data.user }));
+                } catch (error) {
+                    console.log(error);
+                }
+            }
         })
     })
 });
+
 export const {
     useRegisterUserMutation,
     useLoginUserMutation,
     useLogoutUserMutation,
     useLoadUserQuery,
-    useUpdateUserMutation
+    useUpdateUserMutation,
+    useBecomeInstructorMutation   // ⭐ ADDED EXPORT
 } = authApi;

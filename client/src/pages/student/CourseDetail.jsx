@@ -1,4 +1,3 @@
-import BuyCourseButton from "@/components/BuyCourseButton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
-import { BadgeInfo, Lock, PlayCircle } from "lucide-react";
+import { BadgeInfo, PlayCircle } from "lucide-react";
 import React from "react";
 import ReactPlayer from "react-player";
 import { useNavigate, useParams } from "react-router-dom";
@@ -19,20 +17,26 @@ const CourseDetail = () => {
   const params = useParams();
   const courseId = params.courseId;
   const navigate = useNavigate();
-  const { data, isLoading, isError } =
-    useGetCourseDetailWithStatusQuery(courseId);
 
-  if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h>Failed to load course details</h>;
+  // Temporary placeholder data since purchase API is removed
+  // You can replace this with your own course fetching logic
+  const data = {
+    course: {
+      courseTitle: "Sample Course Title",
+      description: "<p>Sample description</p>",
+      creator: { name: "Instructor Name" },
+      createdAt: new Date().toISOString(),
+      enrolledStudents: [],
+      lectures: [
+        {
+          lectureTitle: "Sample Lecture 1",
+          videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+        },
+      ],
+    },
+  };
 
-  const { course, purchased } = data;
-  console.log(purchased);
-
-  const handleContinueCourse = () => {
-    if(purchased){
-      navigate(`/course-progress/${courseId}`)
-    }
-  }
+  const course = data.course;
 
   return (
     <div className="space-y-5">
@@ -55,6 +59,7 @@ const CourseDetail = () => {
           <p>Students enrolled: {course?.enrolledStudents.length}</p>
         </div>
       </div>
+
       <div className="max-w-7xl mx-auto my-5 px-4 md:px-8 flex flex-col lg:flex-row justify-between gap-10">
         <div className="w-full lg:w-1/2 space-y-5">
           <h1 className="font-bold text-xl md:text-2xl">Description</h1>
@@ -62,16 +67,17 @@ const CourseDetail = () => {
             className="text-sm"
             dangerouslySetInnerHTML={{ __html: course.description }}
           />
+
           <Card>
             <CardHeader>
               <CardTitle>Course Content</CardTitle>
-              <CardDescription>4 lectures</CardDescription>
+              <CardDescription>{course.lectures.length} lectures</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {course.lectures.map((lecture, idx) => (
                 <div key={idx} className="flex items-center gap-3 text-sm">
                   <span>
-                    {true ? <PlayCircle size={14} /> : <Lock size={14} />}
+                    <PlayCircle size={14} />
                   </span>
                   <p>{lecture.lectureTitle}</p>
                 </div>
@@ -79,6 +85,7 @@ const CourseDetail = () => {
             </CardContent>
           </Card>
         </div>
+
         <div className="w-full lg:w-1/3">
           <Card>
             <CardContent className="p-4 flex flex-col">
@@ -90,16 +97,14 @@ const CourseDetail = () => {
                   controls={true}
                 />
               </div>
+
               <h1>Lecture title</h1>
               <Separator className="my-2" />
               <h1 className="text-lg md:text-xl font-semibold">Course Price</h1>
             </CardContent>
+
             <CardFooter className="flex justify-center p-4">
-              {purchased ? (
-                <Button onClick={handleContinueCourse} className="w-full">Continue Course</Button>
-              ) : (
-                <BuyCourseButton courseId={courseId} />
-              )}
+              <Button className="w-full">Start Learning</Button>
             </CardFooter>
           </Card>
         </div>
